@@ -2,115 +2,171 @@ import { useState } from "react";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
 
+const SUBJECT_COLORS = [
+  { bg: "rgba(124,92,252,0.2)", color: "#A48FFF" },
+  { bg: "rgba(168,224,69,0.15)", color: "#A8E045" },
+  { bg: "rgba(255,107,74,0.15)", color: "#FF8A6A" },
+  { bg: "rgba(255,185,56,0.15)", color: "#FFB938" },
+  { bg: "rgba(56,189,248,0.15)", color: "#38BDF8" },
+  { bg: "rgba(244,114,182,0.15)", color: "#F472B6" },
+];
+
+function getSubjectColor(subject) {
+  let hash = 0;
+  for (let i = 0; i < subject.length; i++) hash = subject.charCodeAt(i) + ((hash << 5) - hash);
+  return SUBJECT_COLORS[Math.abs(hash) % SUBJECT_COLORS.length];
+}
+
 function SessionCard({ post }) {
-  const [joined, setJoined] = useState(post.joinedUsers?.includes("Purav Patel") || false); // TODO: Replace with actual user authentication
-  const [joinCount, setJoinCount] = useState(post.joinedCount || 0); // Initialize with existing join count or 0
+  const [joined, setJoined] = useState(post.joinedUsers?.includes("Purav Patel") || false);
+  const [joinCount, setJoinCount] = useState(post.joinedCount || 0);
+
+  const subjectColor = getSubjectColor(post.subject || "");
 
   async function handleJoin() {
-    if (joined ==  false){
-      setJoined(true);
-      const newCount  =  joinCount + 1;
-      setJoinCount(newCount);
-
-      const updatedUsers = [
-        ...(post.joinedUsers || []),
-        "Purav Patel" // TODO: Replace with actual user authentication
-      ]
-
-      // Update join count in Firestore
-      await updateDoc(doc(db, "posts", post.id), {
-        joinedCount: newCount,
-        joinedUsers: updatedUsers
-      });
-    }else{
-      return;
-    };
-    
+    if (joined) return;
+    setJoined(true);
+    const newCount = joinCount + 1;
+    setJoinCount(newCount);
+    const updatedUsers = [...(post.joinedUsers || []), "Purav Patel"];
+    await updateDoc(doc(db, "posts", post.id), {
+      joinedCount: newCount,
+      joinedUsers: updatedUsers
+    });
   }
 
   async function handleLeave() {
-    if (joined) {
-      setJoined(false);
-      const newCount  =  joinCount - 1;
-      setJoinCount(newCount);
-      const updatedUsers = (post.joinedUsers || []).filter(
-        (user) => user !== "Purav Patel" // TODO: Replace with actual user authentication
-      )
-      await updateDoc(doc(db, "posts", post.id), {
-        joinedCount: newCount,
-        joinedUsers: updatedUsers
-      });
-    }
+    if (!joined) return;
+    setJoined(false);
+    const newCount = joinCount - 1;
+    setJoinCount(newCount);
+    const updatedUsers = (post.joinedUsers || []).filter(u => u !== "Purav Patel");
+    await updateDoc(doc(db, "posts", post.id), {
+      joinedCount: newCount,
+      joinedUsers: updatedUsers
+    });
   }
 
   return (
-    <div className="bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 p-6 border border-gray-100">
+    <div style={{
+      background: "#161D2E",
+      border: "0.5px solid rgba(255,255,255,0.08)",
+      borderRadius: 14,
+      padding: 18,
+      display: "flex",
+      flexDirection: "column",
+      gap: 12,
+      transition: "border-color 0.2s",
+    }}
+      onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.18)"}
+      onMouseLeave={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"}
+    >
       {/* Header */}
-      <div className="flex justify-between items-start mb-4">
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
         <div>
-          <h3 className="font-bold text-xl text-gray-900">
+          <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: 14, color: "#F5F4F0" }}>
             {post.name}
-          </h3>
-
-          <p className="text-sm text-gray-500 mt-1">
+          </div>
+          <div style={{ fontSize: 11, color: "rgba(245,244,240,0.4)", marginTop: 2 }}>
             Looking for study partners
-          </p>
+          </div>
         </div>
-
-        <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm font-medium">
+        <span style={{
+          padding: "4px 10px",
+          borderRadius: 20,
+          fontSize: 11,
+          fontWeight: 600,
+          background: subjectColor.bg,
+          color: subjectColor.color,
+          whiteSpace: "nowrap"
+        }}>
           {post.subject}
         </span>
       </div>
 
-      {/* Session Info */}
-      <div className="space-y-2 mb-4">
-        <p className="text-gray-600">
-          📍 {post.location}
-        </p>
-
-        <p className="text-gray-600">
-          ⏰ {post.time}
-        </p>
+      {/* Meta */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+        {post.location && (
+          <div style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 12, color: "rgba(245,244,240,0.5)" }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.5 }}>
+              <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>
+            </svg>
+            {post.location}
+          </div>
+        )}
+        {post.time && (
+          <div style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 12, color: "rgba(245,244,240,0.5)" }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.5 }}>
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+            {post.time}
+          </div>
+        )}
       </div>
 
       {/* Message */}
-      <div className="bg-gray-50 rounded-2xl p-4 mb-5">
-        <p className="text-gray-700 leading-relaxed">
+      {post.message && (
+        <div style={{
+          background: "rgba(255,255,255,0.04)",
+          borderRadius: 8,
+          padding: "10px 12px",
+          fontSize: 12,
+          color: "rgba(245,244,240,0.55)",
+          lineHeight: 1.5
+        }}>
           {post.message}
-        </p>
-      </div>
+        </div>
+      )}
 
       {/* Footer */}
-      <div className="flex justify-between items-center">
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "auto" }}>
         <div>
-          <p className="text-sm text-gray-500">
-            👥 {joinCount} students joined
-          </p>
-
+          <div style={{ fontSize: 12, color: "rgba(245,244,240,0.4)" }}>
+            {joinCount} {joinCount === 1 ? "student" : "students"} joined
+          </div>
           {joined && (
-            <span className="inline-block mt-2 text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full">
+            <div style={{
+              marginTop: 4,
+              display: "inline-block",
+              background: "rgba(168,224,69,0.12)",
+              color: "#A8E045",
+              fontSize: 10,
+              fontWeight: 600,
+              padding: "3px 8px",
+              borderRadius: 20
+            }}>
               ✓ You've joined
-            </span>
+            </div>
           )}
         </div>
-
-        <div className="flex gap-2">
-          {!joined ? (
-            <button
-              onClick={handleJoin}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-xl font-medium transition"
-            >
-              Join
-            </button>
-          ) : (
-            <button
-              onClick={handleLeave}
-              className="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-xl font-medium transition"
-            >
-              Leave
-            </button>
-          )}
-        </div>
+        {!joined ? (
+          <button onClick={handleJoin} style={{
+            background: "#A8E045",
+            color: "#0F1523",
+            border: "none",
+            borderRadius: 8,
+            padding: "7px 16px",
+            fontSize: 12,
+            fontWeight: 700,
+            cursor: "pointer",
+            fontFamily: "'Space Grotesk', sans-serif"
+          }}>
+            Join
+          </button>
+        ) : (
+          <button onClick={handleLeave} style={{
+            background: "rgba(255,255,255,0.07)",
+            color: "rgba(245,244,240,0.6)",
+            border: "0.5px solid rgba(255,255,255,0.12)",
+            borderRadius: 8,
+            padding: "7px 16px",
+            fontSize: 12,
+            fontWeight: 600,
+            cursor: "pointer"
+          }}>
+            Leave
+          </button>
+        )}
       </div>
     </div>
   );

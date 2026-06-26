@@ -12,48 +12,77 @@ function Feed({ posts }) {
   );
 
   return (
-    <div className="py-8">
+    <div style={{ paddingTop: 32, paddingBottom: 32 }}>
       {/* Hero */}
-      <div className="bg-white rounded-3xl shadow-lg p-8 mb-8">
-        <h1 className="text-5xl font-bold text-gray-900 mb-3">
-          Study Together.
+      <div style={{ marginBottom: 32 }}>
+        <h1 style={{
+          fontFamily: "'Space Grotesk', sans-serif",
+          fontSize: 42,
+          fontWeight: 700,
+          lineHeight: 1.1,
+          color: "#F5F4F0",
+          margin: "0 0 10px"
+        }}>
+          Study <span style={{ color: "#7C5CFC" }}>together.</span><br />
+          Stress less.
         </h1>
-
-        <p className="text-lg text-gray-600">
-          Find study partners, join sessions, and stay motivated.
+        <p style={{ color: "rgba(245,244,240,0.5)", fontSize: 15, margin: "0 0 20px" }}>
+          Find study partners at UIC — real-time, no sign-up hassle.
         </p>
-
-        <div className="mt-6 flex gap-6 text-sm text-gray-500">
-          <span>📚 {posts.length} Active Sessions</span>
-          <span>🎓 UIC Students</span>
-          <span>⚡ Real-Time Updates</span>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          {[
+            `📚 ${posts.length} active sessions`,
+            "🎓 UIC students",
+            "⚡ Live updates"
+          ].map(label => (
+            <span key={label} style={{
+              background: "rgba(255,255,255,0.06)",
+              border: "0.5px solid rgba(255,255,255,0.1)",
+              borderRadius: 20,
+              padding: "5px 12px",
+              fontSize: 12,
+              color: "rgba(245,244,240,0.6)"
+            }}>
+              {label}
+            </span>
+          ))}
         </div>
       </div>
 
       {/* Search */}
-      <div className="mb-8">
-        <SearchBar search={search} setSearch={setSearch} />
+      <SearchBar search={search} setSearch={setSearch} />
+
+      {/* Section label */}
+      <div style={{
+        fontSize: 11,
+        fontWeight: 600,
+        letterSpacing: "0.08em",
+        textTransform: "uppercase",
+        color: "rgba(245,244,240,0.35)",
+        marginBottom: 14
+      }}>
+        Available sessions
       </div>
 
-      {/* Results */}
-      <div className="mb-4">
-        <h2 className="text-2xl font-semibold text-gray-800">
-          Available Sessions
-        </h2>
-      </div>
-
-      {/* Cards */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Grid */}
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredPosts.map((post) => (
           <SessionCard key={post.id || post.name} post={post} />
         ))}
       </div>
 
       {filteredPosts.length === 0 && (
-        <div className="bg-white rounded-2xl shadow p-10 text-center mt-6">
-          <p className="text-gray-500">
-            No study sessions match your search.
-          </p>
+        <div style={{
+          background: "#161D2E",
+          border: "0.5px solid rgba(255,255,255,0.08)",
+          borderRadius: 14,
+          padding: "48px 24px",
+          textAlign: "center",
+          marginTop: 16
+        }}>
+          <div style={{ fontSize: 13, color: "rgba(245,244,240,0.4)" }}>
+            No sessions match your search — try a different subject or name.
+          </div>
         </div>
       )}
     </div>

@@ -1,24 +1,32 @@
 function SearchBar({ search, setSearch }) {
   return (
-    <div className="bg-white/80 backdrop-blur-md border border-gray-100 p-5 rounded-3xl shadow-lg mb-8">
-      <div className="flex items-center gap-3">
-        
-        {/* Search icon */}
-        <span className="text-gray-400 text-lg">🔍</span>
-
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search sessions by subject or name..."
-          className="w-full bg-transparent outline-none text-gray-700 placeholder-gray-400"
-        />
-      </div>
-
-      {/* subtle helper text */}
-      <p className="text-xs text-gray-400 mt-3">
-        Try: “Math”, “CS”, or a student name
-      </p>
+    <div style={{
+      background: "rgba(255,255,255,0.05)",
+      border: "0.5px solid rgba(255,255,255,0.1)",
+      borderRadius: 12,
+      padding: "12px 16px",
+      display: "flex",
+      alignItems: "center",
+      gap: 10,
+      marginBottom: 24
+    }}>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(245,244,240,0.35)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input
+        type="text"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="Search by subject or name — try &quot;CS 251&quot; or a student name"
+        style={{
+          width: "100%",
+          background: "transparent",
+          border: "none",
+          outline: "none",
+          color: "#F5F4F0",
+          fontSize: 14,
+        }}
+      />
     </div>
   );
 }

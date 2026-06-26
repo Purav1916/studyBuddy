@@ -3,46 +3,65 @@ import { db } from "../firebase";
 import SessionCard from "../components/SessionCard";
 
 function MySessions({ posts }) {
-  // Only show your own sessions
-  const myPosts = posts.filter((post) => post.name === "Purav Patel"); // TODO: Replace with actual user authentication
+  const myPosts = posts.filter((post) => post.name === "Purav Patel");
 
-  // Delete from Firestore
   async function handleDelete(id) {
     await deleteDoc(doc(db, "posts", id));
   }
 
   return (
-    <div className="max-w-6xl mx-auto py-10">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold text-gray-900">
-          My Sessions
+    <div style={{ maxWidth: "100%", paddingTop: 32, paddingBottom: 32 }}>
+      <div style={{ marginBottom: 28 }}>
+        <h1 style={{
+          fontFamily: "'Space Grotesk', sans-serif",
+          fontSize: 28,
+          fontWeight: 700,
+          color: "#F5F4F0",
+          margin: 0
+        }}>
+          My sessions
         </h1>
-        <p className="text-gray-500 mt-2">
-          Manage the study sessions you created
+        <p style={{ color: "rgba(245,244,240,0.45)", fontSize: 14, marginTop: 6, marginBottom: 0 }}>
+          Manage the study sessions you created.
         </p>
       </div>
 
-      {/* Empty state */}
       {myPosts.length === 0 ? (
-        <div className="bg-white rounded-3xl shadow p-10 text-center">
-          <p className="text-gray-500">
-            You haven’t created any study sessions yet.
-          </p>
+        <div style={{
+          background: "#161D2E",
+          border: "0.5px solid rgba(255,255,255,0.08)",
+          borderRadius: 14,
+          padding: "48px 24px",
+          textAlign: "center"
+        }}>
+          <div style={{ fontSize: 13, color: "rgba(245,244,240,0.4)" }}>
+            You haven't created any sessions yet. Head to Create to post your first one.
+          </div>
         </div>
       ) : (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
           {myPosts.map((post) => (
-            <div key={post.id} className="relative">
-              {/* Card */}
+            <div key={post.id}>
               <SessionCard post={post} />
-
-              {/* Delete Button */}
               <button
                 onClick={() => handleDelete(post.id)}
-                className="mt-3 w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded-xl font-medium transition"
+                style={{
+                  marginTop: 8,
+                  width: "100%",
+                  background: "rgba(255,80,80,0.1)",
+                  color: "#FF6B6B",
+                  border: "0.5px solid rgba(255,80,80,0.2)",
+                  borderRadius: 8,
+                  padding: "8px 0",
+                  fontSize: 12,
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  transition: "background 0.15s"
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = "rgba(255,80,80,0.18)"}
+                onMouseLeave={e => e.currentTarget.style.background = "rgba(255,80,80,0.1)"}
               >
-                Delete Session
+                Delete session
               </button>
             </div>
           ))}

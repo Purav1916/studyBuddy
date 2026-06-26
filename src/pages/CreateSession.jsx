@@ -2,108 +2,106 @@ import { useState } from "react";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase";
 
+const inputStyle = {
+  width: "100%",
+  background: "rgba(255,255,255,0.05)",
+  border: "0.5px solid rgba(255,255,255,0.12)",
+  borderRadius: 10,
+  padding: "12px 14px",
+  color: "#F5F4F0",
+  fontSize: 14,
+  outline: "none",
+  boxSizing: "border-box",
+  fontFamily: "'Inter', sans-serif",
+  transition: "border-color 0.15s"
+};
+
 function CreateSession({ posts, setPosts }) {
-  const [form, setForm] = useState({
-    name: "",
-    subject: "",
-    location: "",
-    time: "",
-    message: ""
-  });
+  const [form, setForm] = useState({ name: "", subject: "", location: "", time: "", message: "" });
 
   function handleChange(e) {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value
-    });
+    setForm({ ...form, [e.target.name]: e.target.value });
   }
 
   async function handleSubmit() {
     if (!form.name || !form.subject) return;
-
     await addDoc(collection(db, "posts"), {
       ...form,
       joinedCount: 0,
       joinedUsers: [],
       timestamp: serverTimestamp()
     });
-
-    setForm({
-      name: "",
-      subject: "",
-      location: "",
-      time: "",
-      message: ""
-    });
+    setForm({ name: "", subject: "", location: "", time: "", message: "" });
   }
 
   return (
-  <div className="max-w-3xl mx-auto py-8">
-    <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
-      <div className="mb-8">
-        <h2 className="text-4xl font-bold text-gray-900">
-          Create Study Session
-        </h2>
+    <div style={{ maxWidth: 640, margin: "0 auto", paddingTop: 32, paddingBottom: 32 }}>
+      <div style={{
+        background: "#161D2E",
+        border: "0.5px solid rgba(255,255,255,0.08)",
+        borderRadius: 16,
+        padding: 32
+      }}>
+        <div style={{ marginBottom: 28 }}>
+          <h2 style={{
+            fontFamily: "'Space Grotesk', sans-serif",
+            fontSize: 28,
+            fontWeight: 700,
+            color: "#F5F4F0",
+            margin: 0
+          }}>
+            Create a session
+          </h2>
+          <p style={{ color: "rgba(245,244,240,0.45)", fontSize: 14, marginTop: 6, marginBottom: 0 }}>
+            Post your session and let classmates find you.
+          </p>
+        </div>
 
-        <p className="text-gray-500 mt-2">
-          Find classmates and build your study group.
-        </p>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
+          <input name="name" style={inputStyle} placeholder="Your name" value={form.name} onChange={handleChange}
+            onFocus={e => e.target.style.borderColor = "#7C5CFC"}
+            onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.12)"} />
+          <input name="subject" style={inputStyle} placeholder="Subject (e.g. CS 251)" value={form.subject} onChange={handleChange}
+            onFocus={e => e.target.style.borderColor = "#7C5CFC"}
+            onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.12)"} />
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
+          <input name="location" style={inputStyle} placeholder="Location" value={form.location} onChange={handleChange}
+            onFocus={e => e.target.style.borderColor = "#7C5CFC"}
+            onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.12)"} />
+          <input name="time" style={inputStyle} placeholder="Time (e.g. Today 4–6 PM)" value={form.time} onChange={handleChange}
+            onFocus={e => e.target.style.borderColor = "#7C5CFC"}
+            onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.12)"} />
+        </div>
+
+        <textarea name="message" rows={5} style={{ ...inputStyle, resize: "vertical", marginBottom: 20, lineHeight: 1.6 }}
+          placeholder="Describe what you're studying, what help you need, or what topics you'll cover..."
+          value={form.message} onChange={handleChange}
+          onFocus={e => e.target.style.borderColor = "#7C5CFC"}
+          onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.12)"} />
+
+        <button onClick={handleSubmit} style={{
+          width: "100%",
+          background: "#7C5CFC",
+          color: "#fff",
+          border: "none",
+          borderRadius: 10,
+          padding: "13px 0",
+          fontSize: 15,
+          fontWeight: 700,
+          cursor: "pointer",
+          fontFamily: "'Space Grotesk', sans-serif",
+          transition: "opacity 0.15s"
+        }}
+          onMouseEnter={e => e.currentTarget.style.opacity = "0.88"}
+          onMouseLeave={e => e.currentTarget.style.opacity = "1"}
+        >
+          Create session
+        </button>
       </div>
-
-      <div className="grid md:grid-cols-2 gap-4 mb-4">
-        <input
-          name="name"
-          className="w-full border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none p-4 rounded-2xl transition"
-          placeholder="Your Name"
-          value={form.name}
-          onChange={handleChange}
-        />
-
-        <input
-          name="subject"
-          className="w-full border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none p-4 rounded-2xl transition"
-          placeholder="Subject"
-          value={form.subject}
-          onChange={handleChange}
-        />
-      </div>
-
-      <div className="grid md:grid-cols-2 gap-4 mb-4">
-        <input
-          name="location"
-          className="w-full border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none p-4 rounded-2xl transition"
-          placeholder="Location"
-          value={form.location}
-          onChange={handleChange}
-        />
-
-        <input
-          name="time"
-          className="w-full border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none p-4 rounded-2xl transition"
-          placeholder="Time"
-          value={form.time}
-          onChange={handleChange}
-        />
-      </div>
-
-      <textarea
-        name="message"
-        rows="5"
-        className="w-full border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none p-4 rounded-2xl transition mb-6"
-        placeholder="Describe what you're studying, what help you need, or what topics you'll cover..."
-        value={form.message}
-        onChange={handleChange}
-      />
-
-      <button
-        onClick={handleSubmit}
-        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-4 rounded-2xl font-semibold text-lg transition shadow-md"
-      >
-        Create Session 🚀
-      </button>
     </div>
-  </div>
-);
+  );
 }
 
 export default CreateSession;
