@@ -4,7 +4,7 @@ import { db } from "../firebase";
 
 const inputStyle = {
   width: "100%",
-  background: "rgba(255,255,255,0.05)",
+  backgroundColor: "#161D2E",
   border: "0.5px solid rgba(255,255,255,0.12)",
   borderRadius: 10,
   padding: "12px 14px",
@@ -15,6 +15,17 @@ const inputStyle = {
   fontFamily: "'Inter', sans-serif",
   transition: "border-color 0.15s"
 };
+
+const timeOptions = [];
+for (let hour = 0; hour < 24; hour++) {
+  for (let minute of [0, 30]) {
+    const displayHour = hour % 12 || 12;
+    const displayMinute = minute.toString().padStart(2, "0");
+    const period = hour < 12 ? "AM" : "PM";
+
+    timeOptions.push(`${displayHour}:${displayMinute} ${period}`);
+  }
+}
 
 function CreateSession({ posts, setPosts }) {
   const [form, setForm] = useState({ name: "", subject: "", location: "", time: "", message: "" });
@@ -70,9 +81,22 @@ function CreateSession({ posts, setPosts }) {
           <input name="location" style={inputStyle} placeholder="Location" value={form.location} onChange={handleChange}
             onFocus={e => e.target.style.borderColor = "#7C5CFC"}
             onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.12)"} />
-          <input name="time" style={inputStyle} placeholder="Time (e.g. Today 4–6 PM)" value={form.time} onChange={handleChange}
+          <select
+            name="time"
+            value={form.time}
+            onChange={handleChange}
+            style={inputStyle}
             onFocus={e => e.target.style.borderColor = "#7C5CFC"}
-            onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.12)"} />
+            onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.12)"}
+          >
+  <option value="">Select a time</option>
+
+  {timeOptions.map((time) => (
+    <option key={time} value={time}>
+      {time}
+    </option>
+  ))}
+</select>
         </div>
 
         <textarea name="message" rows={5} style={{ ...inputStyle, resize: "vertical", marginBottom: 20, lineHeight: 1.6 }}
